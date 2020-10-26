@@ -3,7 +3,6 @@ training.data.raw <- read.csv('train.csv',header=T,na.strings=c(" "))
 training.data.raw <- read.csv(file='train.csv', header=T, na.strings=c(""))
 training.data.raw <- read.csv(file='train.csv", header=TRUE, na.strings=c(""))
 ""
-""
 training.data.raw <- read.csv(file="train.csv", header=TRUE, na.strings=c(""))
 training.data.raw <- read.csv('train.csv', header=T, na.strings=c(""))
 sapply(training.data.raw,function(x) sum(is.na(x)))
