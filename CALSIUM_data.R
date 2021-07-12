@@ -1,6 +1,6 @@
 # Solución de LDS capítulo 9 de CALSIUM, relación entre la dosis de prednisolona y nivel total de calcio corporal.
 # dosis (x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) y cada celda de columna da el nivel de calcio corporal
-# Se calcula el promedio de cada columna xi que la nivel de calcio a dosos xi.
+# Se calcula el promedio de cada columna xi que da nivel de calcio a dosis xi.
 Calcio <- read_csv("DataSets/ch09_all/LDS_C09_CALCIUM.csv")
 # para ver los datos en una gráfica de cajas contra dosis x1, x2 ,x3 . . . se colapsa Calcio y se retira
 # índice patient.
