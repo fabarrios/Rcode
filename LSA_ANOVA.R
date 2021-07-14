@@ -13,6 +13,7 @@
 library(tidyverse)
 library(car)
 library(emmeans)
+library(rstatix)
 library(ggstatsplot)
 #
 LSAdata <- read_csv("DataSets/ch08_all/LDS_C08_LSADATA.csv")
@@ -29,8 +30,10 @@ LSAdata_long <- LSAdata_n %>%
   pivot_longer(cols = everything(), names_to = "Type", values_to = "LSA")
 
 # Make the Type of cancer variable a factor and then re-level to group and compare to Cont
-LSAdata_long <- LSAdata_long %>% mutate( Type = factor(Type) )
-LSAdata_long <- LSAdata_long %>% mutate( Type = Type %>% fct_relevel("Cont","BBD","PBC","RMBC") )
+LSAdata_long <- LSAdata_long %>% 
+  mutate( Type = factor(Type) )
+LSAdata_long <- LSAdata_long %>% 
+  mutate( Type = Type %>% fct_relevel("Cont","BBD","PBC","RMBC") )
 
 # does it look right? the following boxplot will tell
 # boxplot(LSA ~ Type, data = LSAdata_long)
@@ -53,6 +56,29 @@ Anova(LSAdata_lm)
 emmeans(LSAdata_lm, pairwise ~ Type)
 emmeans(LSAdata_lm, trt.vs.ctrl ~ Type)
 
+# Now using the rstatix library (grappers for statistical tests)anova
+LSAdata.aov <- LSAdata_long %>% anova_test(LSA ~ Type, effect.size = "ges", detailed = TRUE)
+get_anova_table(res.aov)
+# with emmeans
+LSAdata_long %>% emmeans_test(LSA ~ Type, p.adjust.method = "fdr", detailed = TRUE)
+
+# Now the same using non-parametric tests. For a one-Way ANOVA we use Kruskal-Wallis
+# and effects size and Dunn test all from the rstatistix library
+res.kruskal <- LSAdata_long %>% kruskal_test(LSA ~ Type)
+res.kruskal
+
+# And estimate the Kruskal effect size
+LSAdata_long %>% kruskal_effsize(LSA ~ Type)
+# To estimate the pairwise corrected by multiple comparisons the Dunn's Test
+pc_LSAdata <- LSAdata_long %>% dunn_test(LSA ~ Type, p.adjust.method = "fdr")
 
 # Now a really nice solution with vilolin plots and corrected comparisons
 # Thanks to the reslly nice library ggstatsplot
+ggbetweenstats( data = LSAdata_long, 
+                x = Type, 
+                y = LSA, 
+                type = "p", 
+                pairwise.display = "s", 
+                p.adjust.method = "fdr", 
+                outlier.tagging = TRUE, 
+                title = "Measurement of serum lipid-bound sialic acid (LSA)" )
